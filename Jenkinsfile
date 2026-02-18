@@ -7,9 +7,22 @@ pipeline {
 
     stages {
 
-        stage('Build and Deploy') {
+        stage('Build') {
             steps {
                 sh 'mvn clean package'
+            
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarServer') {
+                    sh 'mvn clean verify sonar:sonar'
+                }
+            }
+    }
+        stage('Deploy') {
+            steps {
                 sh 'java -jar target/*.jar &'
             }
         }
